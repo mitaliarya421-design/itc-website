@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ITC - Institute Technical Council</title>
+  <style>
+    /* ===== RESET & BASE ===== */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #ffffff;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0a0e27 0%, #0d1540 30%, #111d5e 60%, #0a0e27 100%);
+      overflow-x: hidden;
+    }
+    a { text-decoration: none; color: inherit; }
+    ul { list-style: none; }
+
+    /* ===== NAVBAR ===== */
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 40px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 14, 39, 0.92);
+      backdrop-filter: blur(10px);
+    }
+    .logo { display: flex; align-items: center; gap: 8px; }
+    .logo-text { font-size: 2.2rem; font-weight: 900; color: #fff; letter-spacing: 2px; }
+    .logo-text span { color: #00c8ff; }
+    .logo-subtitle { font-size: 0.65rem; line-height: 1.2; color: #b0c4de; text-transform: capitalize; }
+    .nav-links { display: flex; align-items: center; gap: 10px; }
+    .nav-links a {
+      color: #fff; font-size: 0.85rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 1.5px;
+      padding: 8px 12px; transition: color 0.3s; cursor: pointer;
+    }
+    .nav-links a:hover, .nav-links a.active { color: #ff8c00; }
+    .nav-links .separator { color: #fff; font-weight: 300; opacity: 0.5; }
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      cursor: pointer; background: none; border: none; padding: 5px;
+    }
+    .hamburger span { display: block; width: 28px; height: 3px; background: #fff; border-radius: 2px; transition: 0.3s; }
+
+    /* Mobile nav overlay */
+    .mobile-nav {
+      display: none; position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%; background: rgba(10,14,39,0.97);
+      z-index: 1000; flex-direction: column; align-items: center;
+      justify-content: center; gap: 30px;
+    }
+    .mobile-nav.open { display: flex; }
+    .mobile-nav a {
+      font-size: 1.4rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 2px; color: #fff; transition: color 0.3s; cursor: pointer;
+    }
+    .mobile-nav a:hover { color: #ff8c00; }
+    .mobile-nav .close-btn {
+      position: absolute; top: 25px; right: 30px; font-size: 2rem;
+      cursor: pointer; background: none; border: none; color: #fff;
+    }
+
+    /* ===== PAGE SECTIONS ===== */
+    .page-section { display: none; }
+    .page-section.active { display: block; }
+
+    /* ===== PAGE CONTAINER ===== */
+    .page-container { max-width: 1100px; margin: 0 auto; padding: 0 40px; }
+
+    /* ===== HERO ===== */
+    .hero { text-align: left; padding: 80px 0 60px; position: relative; }
+    .hero h1 { font-size: 4.5rem; font-weight: 900; line-height: 1.1; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 30px; }
+    .hero .tagline { font-size: 1.1rem; color: #d0d8e8; margin-bottom: 10px; }
+    .hero .tagline .highlight { color: #ff8c00; font-weight: 700; }
+
+    /* ===== FEATURES ===== */
+    .features { padding: 60px 0; }
+    .features h2 { font-size: 1.2rem; font-weight: 800; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 25px; }
+    .features-card {
+      display: flex; align-items: center; gap: 30px;
+      background: rgba(20,30,80,0.6); border: 1px solid rgba(100,120,200,0.3);
+      border-radius: 10px; padding: 30px; max-width: 700px;
+    }
+    .features-card .text p { font-size: 0.9rem; line-height: 1.6; color: #c8d0e0; margin-bottom: 12px; }
+    .features-card .globe-img {
+      width: 120px; height: 120px; border-radius: 50%;
+      background: radial-gradient(circle, #1a3a8a, #0a1540);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-size: 3rem; border: 2px solid rgba(0,200,255,0.3);
+    }
+
+    /* ===== CTA ===== */
+    .cta { text-align: center; padding: 60px 20px 80px; }
+    .cta p { color: #ff8c00; font-weight: 700; font-size: 1rem; line-height: 1.6; }
+
+    /* ===== ABOUT ===== */
+    .about-header {
+      padding: 50px 0 30px; display: flex; align-items: center;
+      justify-content: space-between; flex-wrap: wrap; gap: 20px;
+    }
+    .about-header .title { font-size: 3.5rem; font-weight: 900; color: #ff8c00; }
+    .about-header .subtitle { font-size: 1.3rem; color: #ff8c00; font-weight: 600; }
+    .about-description {
+      padding: 20px 0 50px; max-width: 700px;
+      font-size: 0.92rem; line-height: 1.8; color: #c8d0e0;
+    }
+    .about-description .highlight-cyan { color: #00e0ff; text-decoration: underline; }
+    .about-description .highlight-orange { color: #ff8c00; text-decoration: underline; }
+    .about-cards {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 30px;
+      padding: 20px 0 30px; max-width: 750px; margin: 0 auto;
+    }
+    .about-card {
+      background: linear-gradient(135deg, #b5714a, #8b5e3c, #a0694d);
+      border-radius: 20px; padding: 30px 25px; position: relative; overflow: hidden;
+    }
+    .about-card h3 { font-size: 1.6rem; font-weight: 800; color: #1a0a00; font-style: italic; margin-bottom: 15px; }
+    .about-card p { font-size: 0.82rem; line-height: 1.6; color: #1a0a00; }
+    .about-card .card-icon { position: absolute; bottom: 15px; right: 20px; font-size: 3rem; opacity: 0.4; }
+    .about-card.mission { grid-column: 1 / -1; max-width: 400px; margin: 0 auto; }
+    .about-card.mission h3 { color: #ff2200; font-style: italic; }
+    .about-bottom {
+      padding: 40px 0 80px; max-width: 700px;
+      font-size: 0.95rem; line-height: 1.8; color: #c8d0e0;
+    }
+    .about-bottom .hl-orange { color: #ff8c00; }
+    .about-bottom .hl-cyan { color: #00e0ff; }
+    .about-bottom .hl-green { color: #00e060; }
+
+    /* ===== EVENTS ===== */
+    .events-section { position: relative; }
+    .events-section::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: repeating-linear-gradient(90deg, transparent, transparent 28px, rgba(100,120,200,0.08) 28px, rgba(100,120,200,0.08) 30px);
+      pointer-events: none;
+    }
+    .events-header {
+      padding: 50px 0 10px; display: flex;
+      align-items: flex-start; justify-content: space-between; position: relative; z-index: 1;
+    }
+    .events-header h1 { font-size: 3.5rem; font-weight: 900; color: #ff8c00; text-transform: uppercase; letter-spacing: 3px; }
+    .events-header p { font-size: 0.95rem; color: #c8d0e0; margin-top: 5px; max-width: 500px; }
+    .clubs-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px;
+      padding: 50px 0; max-width: 800px; margin: 0 auto; position: relative; z-index: 1;
+    }
+    .club-card {
+      background: linear-gradient(135deg, #40d9d9, #60e8e8, #30c8c8);
+      border-radius: 25px; padding: 30px 20px 25px; text-align: center;
+      display: flex; flex-direction: column; align-items: center; gap: 12px; min-height: 200px;
+    }
+    .club-card .club-icon { width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; }
+    .club-card h4 { font-size: 0.9rem; font-weight: 700; color: #0a1540; }
+    .club-card p { font-size: 0.72rem; color: #1a2a50; line-height: 1.4; }
+    .events-footer { text-align: center; padding: 40px 0 80px; position: relative; z-index: 1; }
+    .events-footer .more-text { font-size: 1.3rem; font-weight: 600; color: #fff; margin-bottom: 15px; }
+    .events-footer .clubs-note { font-size: 1.5rem; font-weight: 800; text-transform: uppercase; margin-bottom: 20px; }
+    .events-footer .info-link { font-size: 0.75rem; color: #a0a8c0; }
+
+    /* ===== TEAM ===== */
+    .team-page {
+      position: relative;
+      background: linear-gradient(180deg, #0a0e27 0%, #0d1540 50%, #0a0e27 100%);
+    }
+    .team-page::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 38px,
+        rgba(60, 80, 160, 0.1) 38px,
+        rgba(60, 80, 160, 0.1) 40px
+      );
+      pointer-events: none;
+    }
+    .team-page > * { position: relative; z-index: 1; }
+    .team-header {
+      text-align: center;
+      padding: 60px 20px 10px;
+    }
+    .team-header .itc-logo-small {
+      font-size: 1.2rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+    .team-header h1 {
+      font-size: 3.2rem;
+      font-weight: 900;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 6px;
+      margin-bottom: 8px;
+    }
+    .team-header .team-subtitle {
+      font-size: 0.8rem;
+      color: #a0a8c0;
+      letter-spacing: 1px;
+    }
+    .team-section {
+      padding: 40px 20px;
+      text-align: center;
+    }
+    .team-section h2 {
+      font-size: 2rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 5px;
+      color: #fff;
+      margin-bottom: 30px;
+    }
+    .team-section h2.orange { color: #ff8c00; }
+    .team-section-img {
+      width: 100%;
+      max-width: 850px;
+      border-radius: 12px;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+      margin: 0 auto;
+      display: block;
+    }
+    .team-clubs-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      max-width: 950px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    .team-clubs-grid img {
+      width: 100%;
+      border-radius: 10px;
+      box-shadow: 0 6px 30px rgba(0, 0, 0, 0.4);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .team-clubs-grid img:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 45px rgba(0, 0, 0, 0.6);
+    }
+    .team-single-img {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    .team-single-img img {
+      width: 100%;
+      border-radius: 10px;
+      box-shadow: 0 6px 30px rgba(0, 0, 0, 0.4);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .team-single-img img:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 45px rgba(0, 0, 0, 0.6);
+    }
+    .team-double-img {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      max-width: 750px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    .team-double-img img {
+      width: 100%;
+      border-radius: 10px;
+      box-shadow: 0 6px 30px rgba(0, 0, 0, 0.4);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .team-double-img img:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 45px rgba(0, 0, 0, 0.6);
+    }
+    .team-footer {
+      text-align: center;
+      padding: 60px 20px 40px;
+      font-size: 0.85rem;
+      color: #a0a8c0;
+      letter-spacing: 1px;
+    }
+
+    @media (max-width: 768px) {
+      .team-clubs-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+      .team-double-img { grid-template-columns: 1fr; }
+      .team-header h1 { font-size: 2.2rem; letter-spacing: 3px; }
+      .team-section h2 { font-size: 1.5rem; letter-spacing: 3px; }
+    }
+    @media (max-width: 480px) {
+      .team-clubs-grid { grid-template-columns: 1fr; }
+      .team-header h1 { font-size: 1.8rem; }
+    }
+
+    /* ===== CONTACT ===== */
+    .contact-page { display: flex; flex-direction: column; align-items: center; min-height: 80vh; padding: 40px 0 60px; }
+    .contact-top { display: flex; align-items: center; justify-content: flex-end; width: 100%; padding: 0 0 20px; }
+    .support-badge {
+      background: #ff8c00; color: #fff; font-size: 0.8rem; font-weight: 700;
+      padding: 6px 16px; border-radius: 6px; position: relative;
+      text-transform: uppercase; letter-spacing: 1px;
+    }
+    .support-badge::after {
+      content: ''; position: absolute; bottom: -8px; right: 15px;
+      width: 0; height: 0; border-left: 8px solid transparent;
+      border-right: 8px solid transparent; border-top: 10px solid #ff8c00;
+    }
+    .contact-heading { text-align: center; padding: 30px 20px 10px; }
+    .contact-heading h1 { font-size: 3rem; font-weight: 900; color: #6040ff; text-transform: uppercase; letter-spacing: 8px; }
+    .contact-heading p { font-size: 0.85rem; color: #c8d0e0; margin-top: 10px; }
+    .contact-form {
+      display: flex; flex-direction: column; gap: 25px;
+      padding: 40px 20px; width: 100%; max-width: 500px;
+    }
+    .contact-form input, .contact-form textarea {
+      width: 100%; padding: 16px 25px; border: none; border-radius: 30px;
+      background: rgba(100,80,180,0.35); color: #fff; font-size: 0.95rem;
+      font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+      outline: none; transition: background 0.3s;
+    }
+    .contact-form input::placeholder, .contact-form textarea::placeholder { color: #fff; opacity: 0.8; }
+    .contact-form input:focus, .contact-form textarea:focus { background: rgba(100,80,180,0.55); }
+    .contact-form textarea { border-radius: 20px; min-height: 80px; resize: vertical; }
+    .contact-form button {
+      padding: 16px 40px; border: none; border-radius: 30px;
+      background: linear-gradient(135deg, #5030c0, #7050e0);
+      color: #fff; font-size: 1.1rem; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 3px;
+      cursor: pointer; align-self: center; transition: transform 0.2s, box-shadow 0.3s; min-width: 220px;
+    }
+    .contact-form button:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(80,48,192,0.4); }
+    .contact-info { text-align: center; padding: 30px 20px; }
+    .contact-info ul { display: flex; flex-direction: column; gap: 8px; }
+    .contact-info li { font-size: 0.95rem; font-weight: 700; }
+    .contact-info li::before { content: '• '; }
+
+    /* Glow effects */
+    .glow-purple {
+      position: absolute; width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(100,50,200,0.3), transparent 70%);
+      border-radius: 50%; pointer-events: none; z-index: 0;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .navbar { padding: 15px 20px; }
+      .page-container { padding: 0 20px; }
+      .hero h1 { font-size: 2.5rem; letter-spacing: 1px; }
+      .hero { padding: 50px 0 40px; }
+      .hero .tagline { font-size: 0.95rem; }
+      .features { padding: 40px 0; }
+      .features-card { flex-direction: column; text-align: center; }
+      .features-card .globe-img { width: 90px; height: 90px; font-size: 2.2rem; }
+      .cta p { font-size: 0.9rem; }
+      .about-header { padding: 30px 0 20px; }
+      .about-header .title { font-size: 2.5rem; }
+      .about-description { padding: 15px 0 30px; font-size: 0.85rem; }
+      .about-cards { grid-template-columns: 1fr; padding: 15px 0; }
+      .about-card.mission { max-width: 100%; }
+      .about-bottom { padding: 30px 0 60px; }
+      .clubs-grid { grid-template-columns: 1fr 1fr; gap: 20px; padding: 30px 20px; }
+      .events-header { padding: 30px 0 10px; flex-direction: column; }
+      .events-header h1 { font-size: 2.5rem; }
+      .events-footer .more-text { font-size: 1rem; }
+      .events-footer .clubs-note { font-size: 1.1rem; }
+      .contact-heading h1 { font-size: 2rem; letter-spacing: 4px; }
+      .contact-form { padding: 30px 20px; }
+      .contact-top { padding: 15px 20px; }
+    }
+
+    @media (max-width: 480px) {
+      .hero h1 { font-size: 2rem; }
+      .clubs-grid { grid-template-columns: 1fr; max-width: 300px; }
+      .about-header .title { font-size: 2rem; }
+      .contact-heading h1 { font-size: 1.6rem; letter-spacing: 3px; }
+      .logo-text { font-size: 1.8rem; }
+      .team-hero h1 { font-size: 2.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========== NAVBAR ========== -->
+  <nav class="navbar">
+    <div class="logo">
+      <div><div class="logo-text">itc</div></div>
+      <div class="logo-subtitle">Institute<br>Technical<br>Council</div>
+    </div>
+    <div class="nav-links">
+      <a onclick="showPage('home')" class="active" data-page="home">HOME</a>
+      <span class="separator">|</span>
+      <a onclick="showPage('about')" data-page="about">ABOUT</a>
+      <span class="separator">|</span>
+      <a onclick="showPage('events')" data-page="events">EVENTS</a>
+      <span class="separator">|</span>
+      <a onclick="showPage('team')" data-page="team">TEAM</a>
+      <span class="separator">|</span>
+      <a onclick="showPage('contact')" data-page="contact">CONTACT</a>
+    </div>
+    <button class="hamburger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Mobile Nav -->
+  <div class="mobile-nav" id="mobileNav">
+    <button class="close-btn" onclick="toggleMenu()">&times;</button>
+    <a onclick="showPage('home'); toggleMenu()">HOME</a>
+    <a onclick="showPage('about'); toggleMenu()">ABOUT</a>
+    <a onclick="showPage('events'); toggleMenu()">EVENTS</a>
+    <a onclick="showPage('team'); toggleMenu()">TEAM</a>
+    <a onclick="showPage('contact'); toggleMenu()">CONTACT</a>
+  </div>
+
+  <!-- ========== HOME PAGE ========== -->
+  <div id="page-home" class="page-section active">
+    <div class="page-container">
+      <section class="hero">
+        <div class="glow-purple" style="top: 0; left: 50%; transform: translateX(-50%);"></div>
+        <h1>THINK. BUILD.<br>TRANSFORM.</h1>
+        <p class="tagline">STEP INTO <span class="highlight">ITC</span> — Where Innovation Begins<br>And Ideas Become Reality.</p>
+      </section>
+
+      <section class="features">
+        <h2>FEATURES</h2>
+        <div class="features-card">
+          <div class="text">
+            <p>Learn to build modern, responsive websites and applications using the latest technologies.</p>
+            <p>Design Intuitive And Visually Appealing User Experiences That Solve Real-World Problems.</p>
+            <p>Work On Real-World Projects, Collaborate With Teams, And Bring Your Ideas To Life.</p>
+          </div>
+          <div class="globe-img">🌐</div>
+        </div>
+      </section>
+
+      <section class="cta" style="text-align:left; padding-left:0; padding-right:0;">
+        <p>Ready To Start Your Journey In Tech?<br>Join ITC Today And Be Part Of Something Amazing.</p>
+      </section>
+    </div>
+  </div>
+
+  <!-- ========== ABOUT PAGE ========== -->
+  <div id="page-about" class="page-section">
+    <div class="page-container">
+      <section class="about-header">
+        <div>
+          <h1 class="title">About</h1>
+          <p class="subtitle">Institute Technical Council</p>
+        </div>
+        <div class="logo" style="gap: 10px;">
+          <div class="logo-text" style="font-size: 2.8rem;">itc<span>.</span></div>
+          <div class="logo-subtitle" style="font-size: 0.75rem;">Institute<br>Technical<br>Council</div>
+        </div>
+      </section>
+
+      <section class="about-description">
+        <p>
+          The <span class="highlight-cyan">Institute Technical Council (ITC)</span> is the central body for all technical activities
+          within the institute. It plays a crucial role in fostering <span class="highlight-orange">innovation</span>, technical skills, and
+          a culture of <span class="highlight-orange">creativity</span> among students.
+        </p>
+        <br>
+        <p>
+          ITC serves as a platform where ideas are transformed into reality. By providing
+          <span class="highlight-cyan">resources, mentorship, and opportunities</span>, the council empowers students to explore,
+          build, and innovate across diverse domains of technology.
+        </p>
+      </section>
+
+      <div class="about-cards">
+        <div class="about-card">
+          <h3>What ITC Does</h3>
+          <p>ITC organizes workshops, competitions, and projects, bringing students together to collaborate across technical domains and gain real-world experience.</p>
+          <div class="card-icon">❓</div>
+        </div>
+        <div class="about-card">
+          <h3>Structure of ITC</h3>
+          <p>ITC includes multiple clubs and teams across domains like web development, robotics, aeromodelling, and AI, working together to build innovative projects and organize technical events.</p>
+          <div class="card-icon">⚙️</div>
+        </div>
+        <div class="about-card mission">
+          <h3>Mission</h3>
+          <p>To cultivate a strong technical culture by enabling students to learn, innovate, and apply their skills to solve real-world problems. and to create a dynamic and inclusive environment where technology and creativity come together to drive innovation and excellence.</p>
+          <div class="card-icon">🎯</div>
+        </div>
+      </div>
+
+      <section class="about-bottom">
+        <p>
+          With numerous clubs, <span class="hl-orange">teams, and events</span>, ITC impacts <span class="hl-orange">thousands</span> of students every year.
+          It provides <span class="hl-cyan">opportunities</span> to work on projects, participate in competitions, and
+          collaborate with like-<span class="hl-cyan">minded individuals</span>. The council continues to inspire students to
+          push boundaries and achieve <span class="hl-green">excellence</span> in the field of technology.
+        </p>
+      </section>
+    </div>
+  </div>
+
+  <!-- ========== EVENTS PAGE ========== -->
+  <div id="page-events" class="page-section events-section">
+    <div class="page-container">
+    <section class="events-header">
+      <div>
+        <h1>EVENTS</h1>
+        <p>Explore workshops, competitions, and technical initiatives conducted across IITB.</p>
+      </div>
+    </section>
+
+    <div class="clubs-grid">
+      <div class="club-card">
+        <div class="club-icon">✈️</div>
+        <h4>Aeromodelling Club</h4>
+        <p>Conducts RC plane competitions and activities related to RC planes and drones</p>
+      </div>
+      <div class="club-card">
+        <div class="club-icon">🤖</div>
+        <h4>Electronics and Robotics Club</h4>
+        <p>Conducts XLR8 competition and activities related to electronics and robotics.</p>
+      </div>
+      <div class="club-card">
+        <div class="club-icon">&lt;/&gt;</div>
+        <h4>Web and Coding Club</h4>
+        <p>Conducts learner's space, code wars, seasons of code and many more events and workshops etc.</p>
+      </div>
+      <div class="club-card">
+        <div class="club-icon">🌟</div>
+        <h4>Krittika</h4>
+        <p>Krittika is a astronomy club conducts astronomia and many more events related to astronomy</p>
+      </div>
+      <div class="club-card">
+        <div class="club-icon">📐</div>
+        <h4>Maths and Physics Club</h4>
+        <p>Organizes workshops and competitions on mathematics and physics, with brainstorming challenges.</p>
+      </div>
+      <div class="club-card">
+        <div class="club-icon">🌊</div>
+        <h4>AUV-IITB</h4>
+        <p>Autonomous Underwater Vehicle team of IIT Bombay, designing Matsya series for underwater robotics competitions.</p>
+      </div>
+    </div>
+
+    <div class="events-footer">
+      <p class="more-text">And many more events, workshops are conducted by many clubs and teams.</p>
+      <p class="clubs-note">MANY CLUBS ARE NOT MENTIONED HERE</p>
+      <p class="info-link">FOR MORE INFO: https://clubroyale.tech-iitb.org/council/itc</p>
+    </div>
+    </div>
+  </div>
+
+  <!-- ========== TEAM PAGE ========== -->
+  <div id="page-team" class="page-section team-page">
+
+    <!-- Header -->
+    <div class="team-header">
+      <div class="itc-logo-small">itc</div>
+      <h1>MEET THE TEAM</h1>
+      <p class="team-subtitle">THE PEOPLE BEHIND INSTITUTE TECHNICAL COUNCIL, IIT BOMBAY</p>
+    </div>
+
+    <!-- Core Team 2022-23 -->
+    <div class="team-section">
+      <h2 class="orange">TEAM 2022-23</h2>
+      <img class="team-section-img" src="assets/9.png" alt="Core Team 2022-23">
+    </div>
+
+    <!-- Clubs Section -->
+    <div class="team-section">
+      <h2>CLUBS</h2>
+      <div class="team-clubs-grid">
+        <img src="assets/1.png" alt="Maths N Physics Club">
+        <img src="assets/2.png" alt="Chemistry Club">
+        <img src="assets/3.png" alt="BioX Club">
+        <img src="assets/4.png" alt="Web N Coding Club">
+        <img src="assets/5.png" alt="Energy Club">
+        <img src="assets/8.png" alt="Aeromodelling Club">
+      </div>
+    </div>
+
+    <!-- Tinkerers' Lab -->
+    <div class="team-section">
+      <h2>TINKERERS' LAB</h2>
+      <div class="team-single-img">
+        <img src="assets/thinkers lab.png" alt="Tinkerers' Laboratory Team">
+      </div>
+    </div>
+
+    <!-- Chem E TL -->
+    <div class="team-section">
+      <h2>CHEM E TL</h2>
+      <div class="team-single-img">
+        <img src="assets/chem e tl.png" alt="ChemE iTL Team">
+      </div>
+    </div>
+
+    <!-- Web -->
+    <div class="team-section">
+      <h2>WEB</h2>
+      <div class="team-single-img">
+        <img src="assets/web.png" alt="Web Team">
+      </div>
+    </div>
+
+    <!-- Creatives -->
+    <div class="team-section">
+      <h2>CREATIVES</h2>
+      <div class="team-double-img">
+        <img src="assets/creative1.png" alt="Design Team">
+        <img src="assets/createive2.png" alt="Media and Creatives Team">
+      </div>
+    </div>
+
+    <!-- PG Team -->
+    <div class="team-section">
+      <h2>PG TEAM</h2>
+      <div class="team-single-img">
+        <img src="assets/pgteam.png" alt="PG Team">
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="team-footer">ITC, IIT Bombay</div>
+  </div>
+
+  <!-- ========== CONTACT PAGE ========== -->
+  <div id="page-contact" class="page-section">
+    <div class="contact-page">
+      <div class="contact-top">
+        <div class="support-badge">SUPPORT</div>
+      </div>
+
+      <div class="contact-heading">
+        <h1>CONTACT US</h1>
+        <p>Have questions or want to get involved? Reach out to us and we'll get back to you soon.</p>
+      </div>
+
+      <div style="position: relative; width: 100%; display: flex; justify-content: center;">
+        <div class="glow-purple" style="top: -50px; left: 50%; transform: translateX(-50%); width: 400px; height: 400px;"></div>
+        <form class="contact-form" onsubmit="return false;">
+          <input type="text" placeholder="NAME" required>
+          <input type="email" placeholder="EMAIL" required>
+          <textarea placeholder="MESSAGE" rows="3" required></textarea>
+          <button type="submit">SUBMIT</button>
+        </form>
+      </div>
+
+      <div class="contact-info">
+        <ul>
+          <li><strong>Email: itc@iitb.ac.in</strong></li>
+          <li><strong>Location: IIT Bombay, Mumbai</strong></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SCRIPT ========== -->
+  <script>
+    function showPage(page) {
+      // Hide all sections
+      document.querySelectorAll('.page-section').forEach(function(s) {
+        s.classList.remove('active');
+      });
+      // Show target section
+      document.getElementById('page-' + page).classList.add('active');
+
+      // Update active nav link
+      document.querySelectorAll('.nav-links a[data-page]').forEach(function(a) {
+        a.classList.remove('active');
+      });
+      var activeLink = document.querySelector('.nav-links a[data-page="' + page + '"]');
+      if (activeLink) activeLink.classList.add('active');
+
+      // Scroll to top
+      window.scrollTo(0, 0);
+    }
+
+    function toggleMenu() {
+      document.getElementById('mobileNav').classList.toggle('open');
+    }
+  </script>
+
+</body>
+</html>
